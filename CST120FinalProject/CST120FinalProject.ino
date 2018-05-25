@@ -20,6 +20,18 @@ All text above, and the splash screen must be included in any redistribution
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <ffft.h>
+
+// FFT Stuff:
+#define  IR_AUDIO  0 // ADC channel to capture
+//volatile long zero = 0;
+volatile byte position = 0;
+int16_t      capture[FFT_N];   /* Wave capture buffer */
+complex_t    bfly_buff[FFT_N]; /* FFT buffer */
+uint16_t     spectrum[FFT_N/2]; /* Spectrum output buffer */
+// Only enough RAM for 64 sample buffer (32 outputs)
+// In library file ffft.h, FFT_N must be defined as 64.
+// If set to 128 this WILL crash and burn due to lack of RAM.
 
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
@@ -54,17 +66,6 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
 
-// Flag for audio input clipping
-boolean clipping = 0;
-
-// Storage to compare ADC values
-byte newRead = 0;
-byte prevRead = 0;
-
-// Frequency calculation variables
-unsigned int timer = 0;
-unsigned int period;
-int frequency;
 
 void setup()   
 {
@@ -73,84 +74,111 @@ void setup()
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);  // initialize with the I2C addr 0x3C (for the 128x32)
 
-  // Display splash screen for 1 second
+  // Display splash screen for 2 seconds then clear
   display.display();
   delay(2000);
+  display.clearDisplay();
+  display.display();
+  
 
   // Show Frequency Text
-  show_text();
+  //show_text();
 
-
-  // SETUP MICROPHONG ADC
-  pinMode(13,OUTPUT);//led indicator pin
-  
-  cli();//disable interrupts
-  
-  //set up continuous sampling of analog pin 0
-  
-  //clear ADCSRA and ADCSRB registers
-  ADCSRA = 0;
-  ADCSRB = 0;
-  
-  ADMUX |= (1 << REFS0); //set reference voltage
-  ADMUX |= (1 << ADLAR); //left align the ADC value- so we can read highest 8 bits from ADCH register only
-  
-  ADCSRA |= (1 << ADPS2) | (1 << ADPS0); //set ADC clock with 32 prescaler- 16mHz/32=500kHz
-  ADCSRA |= (1 << ADATE); //enabble auto trigger
-  ADCSRA |= (1 << ADIE); //enable interrupts when measurement complete
-  ADCSRA |= (1 << ADEN); //enable ADC
-  ADCSRA |= (1 << ADSC); //start ADC measurements
-  
-  sei();//enable interrupts
-  
-}
-
-// INTERRUPT SERVICE ROUTINE FOR ADC READ
-ISR(ADC_vect) 
-{
-  prevRead = newRead;//store previous value
-  newRead = ADCH;//get value from A0
-
-  //if increasing and crossing midpoint
-  if (prevRead < 127 && newRead >=127)
-  {
-    period = timer;//get period
-    timer = 0;//reset timer
-  }
-  
-  if (newRead == 0 || newRead == 1023){//if clipping
-    PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led
-    clipping = 1;//currently clipping
-  }
-  
-  timer++;//increment timer at rate of 38.5kHz
+  adcInit(); 
 }
 
 void loop() 
 {  
-  if (clipping)
-  {
-    PORTB &= B11011111; //turn off clipping indicator led
-    clipping = 0;
-  }
-
-   frequency = 38462/period;//timer rate/period
+  fft_input(capture, bfly_buff);
+  position = 0;  // Restart A/D
+  fft_execute(bfly_buff);
+  fft_output(bfly_buff, spectrum);
   
-   // Print results
-   show_text();
+  show_text();
 
-   delay(100);
+  delay(100);
 }
 
 void show_text(void) {
-  display.setTextSize(2);
+  display.setTextSize(1);
   display.setTextColor(WHITE);
-  display.setCursor(10,0);
+  display.setCursor(0,0);
   display.clearDisplay();
-  display.println(frequency);
+ // String full_line = spectrum[0]+spectrum[1]+spectrum[2]+spectrum[3];
+  //display.println(full_line);
+  display.print(spectrum[0]);display.print(" ");
+  display.print(spectrum[1]);display.print(" ");
+  display.print(spectrum[2]);display.print(" ");
+  display.print(spectrum[3]);display.print(" ");
+  display.print(spectrum[4]);display.print(" ");
+  display.print(spectrum[5]);display.print(" ");
+  display.print(spectrum[6]);display.println(" ");
+
+  display.print(spectrum[7]);display.print(" ");
+  display.print(spectrum[8]);display.print(" ");
+  display.print(spectrum[9]);display.print(" ");
+  display.print(spectrum[10]);display.print(" ");
+  display.print(spectrum[11]);display.print(" ");
+  display.print(spectrum[12]);display.print(" ");
+  display.print(spectrum[13]);display.println(" ");
+  
+  display.print(spectrum[14]);display.print(" ");
+  display.print(spectrum[15]);display.print(" ");
+  display.print(spectrum[16]);display.print(" ");
+  display.print(spectrum[17]);display.print(" ");
+  display.print(spectrum[18]);display.print(" ");
+  display.print(spectrum[19]);display.print(" ");
+  display.print(spectrum[20]);display.println(" ");
+  
+  display.print(spectrum[21]);display.print(" ");
+  display.print(spectrum[22]);display.print(" ");
+  display.print(spectrum[23]);display.print(" ");
+  display.print(spectrum[24]);display.print(" ");
+  display.print(spectrum[25]);display.print(" ");
+  display.print(spectrum[26]);display.print(" ");
+  display.print(spectrum[27]);display.println(" ");
+  
   //int x = 10; 
   //display.println("Frequency in hz is:"); 
   //display.x; 
   display.display();
   delay(1);
+}
+
+byte foo = 0;
+
+// Free-running ADC fills capture buffer
+ISR(ADC_vect)
+{
+  // Capture every third sample to get 192:1 prescaler on A/D
+  // Equiv to 6400 Hz sampling...seems awfully slow, but makes for
+  // more interesting display.
+  if(++foo < 3) return;
+  foo = 0;
+
+  if(position >= FFT_N) return;
+  
+//  capture[position] = ADC + zero;
+  capture[position] = ADC - 512; // Hardcoded zero calibration
+  // Filter out low-level noise
+  if((capture[position] >= -2) && (capture[position] <= 2))
+    capture[position] = 0;
+
+  position++;
+}
+
+void adcInit()
+{
+  // Free running ADC mode, f = ( 16MHz / prescaler ) / 13 cycles per conversion 
+  ADMUX  = IR_AUDIO; // Analog channel selection.  Right-adjusted.  Using AREF pin tued to 3.3V regulator output
+  ADCSRA = _BV(ADEN)  | // ADC enable
+           _BV(ADSC)  | // ADC start
+           _BV(ADATE) | // Auto trigger
+           _BV(ADIE)  | // Interrupt enable
+//           _BV(ADPS2) | _BV(ADPS1); // prescaler 64, then /3 in interrupt for ~ 6KHz sample rate
+           _BV(ADPS2) | _BV(ADPS1) | _BV(ADPS0); // prescaler 128 : 9615 Hz - 150 Hz per 64 divisions, better for most music
+  ADCSRB = 0;
+  DIDR0 = 1 << 0;
+  //TIMSK0 = 0;  
+  sei(); // Enable interrupts
 }
