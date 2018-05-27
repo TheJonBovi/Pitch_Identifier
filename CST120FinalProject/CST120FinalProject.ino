@@ -36,11 +36,7 @@ uint16_t     spectrum[FFT_N/2]; /* Spectrum output buffer */
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
 
-#define NUMFLAKES 10
-#define XPOS 0
-#define YPOS 1
-#define DELTAY 2
-
+#define NOISE_THRESHOLD 2
 
 #define LOGO16_GLCD_HEIGHT 16 
 #define LOGO16_GLCD_WIDTH  16 
@@ -100,12 +96,30 @@ void loop()
 }
 
 void show_text(void) {
-  display.setTextSize(1);
+  display.setTextSize(2);
   display.setTextColor(WHITE);
-  display.setCursor(0,0);
+  display.setCursor(3,0);
   display.clearDisplay();
- // String full_line = spectrum[0]+spectrum[1]+spectrum[2]+spectrum[3];
-  //display.println(full_line);
+
+  int checker = 0;
+  int to_display;
+
+  for (int z = 0; z < 32; ++z)
+  {
+    if (checker < spectrum[z])
+    {
+      checker = spectrum[z];
+      to_display = z;
+    }  
+  }
+  display.println("Frequency");
+  //display.println(to_display);
+  
+  display.print("~");
+  display.print((80 + to_display * 40 - 20));
+  display.print(" - ");
+  display.print(80 + to_display * 40 + 20);
+  /*
   display.print(spectrum[0]);display.print(" ");
   display.print(spectrum[1]);display.print(" ");
   display.print(spectrum[2]);display.print(" ");
@@ -137,10 +151,7 @@ void show_text(void) {
   display.print(spectrum[25]);display.print(" ");
   display.print(spectrum[26]);display.print(" ");
   display.print(spectrum[27]);display.println(" ");
-  
-  //int x = 10; 
-  //display.println("Frequency in hz is:"); 
-  //display.x; 
+  */
   display.display();
   delay(1);
 }
@@ -161,7 +172,7 @@ ISR(ADC_vect)
 //  capture[position] = ADC + zero;
   capture[position] = ADC - 512; // Hardcoded zero calibration
   // Filter out low-level noise
-  if((capture[position] >= -2) && (capture[position] <= 2))
+  if((capture[position] >= NOISE_THRESHOLD) && (capture[position] <= NOISE_THRESHOLD))
     capture[position] = 0;
 
   position++;
