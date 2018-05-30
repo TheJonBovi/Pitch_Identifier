@@ -8109,9 +8109,7 @@ Mempac S 4V8</description>
 <part name="IC1" library="linear" deviceset="78*" device="TV" technology="05"/>
 <part name="C1" library="rcl" deviceset="CPOL-US" device="085CS-1AW" value="0.1uF"/>
 <part name="C2" library="rcl" deviceset="CPOL-US" device="085CS-1AW" value="0.1uF"/>
-<part name="BATTERIES" library="battery" deviceset="VMS4V8" device="">
-<attribute name="VOLTAGE" value="6V"/>
-</part>
+<part name="4X1.5VBATTERY" library="battery" deviceset="VMS4V8" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="P+1" library="supply1" deviceset="+5V" device=""/>
 <part name="D1" library="personal" deviceset="1N4007" device=""/>
@@ -8124,9 +8122,8 @@ Mempac S 4V8</description>
 <instance part="IC1" gate="A1" x="30.48" y="78.74"/>
 <instance part="C1" gate="G$1" x="15.24" y="68.58"/>
 <instance part="C2" gate="G$1" x="45.72" y="68.58"/>
-<instance part="BATTERIES" gate="1" x="2.54" y="78.74" smashed="yes">
+<instance part="4X1.5VBATTERY" gate="1" x="2.54" y="78.74" smashed="yes">
 <attribute name="NAME" x="-6.35" y="81.915" size="1.778" layer="95"/>
-<attribute name="VOLTAGE" x="-2.54" y="73.66" size="1.778" layer="96"/>
 </instance>
 <instance part="GND1" gate="1" x="45.72" y="50.8"/>
 <instance part="P+1" gate="1" x="60.96" y="78.74" rot="R270"/>
@@ -8137,7 +8134,7 @@ Mempac S 4V8</description>
 <nets>
 <net name="N$1" class="0">
 <segment>
-<pinref part="BATTERIES" gate="1" pin="+"/>
+<pinref part="4X1.5VBATTERY" gate="1" pin="+"/>
 <pinref part="IC1" gate="A1" pin="VI"/>
 <wire x1="10.16" y1="78.74" x2="15.24" y2="78.74" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="+"/>
@@ -8173,7 +8170,7 @@ Mempac S 4V8</description>
 </net>
 <net name="N$2" class="0">
 <segment>
-<pinref part="BATTERIES" gate="1" pin="-"/>
+<pinref part="4X1.5VBATTERY" gate="1" pin="-"/>
 <wire x1="-12.7" y1="78.74" x2="-7.62" y2="78.74" width="0.1524" layer="91"/>
 <wire x1="-12.7" y1="58.42" x2="-12.7" y2="78.74" width="0.1524" layer="91"/>
 <pinref part="D1" gate="G$1" pin="C"/>

@@ -7737,15 +7737,15 @@ Source: http://www.lemo.com/pdfs/catalog/ROW/German/unipole_multipole.pdf</descr
 <attribute name="VALUE" x="-15.24" y="63.5" size="1.778" layer="96"/>
 </instance>
 <instance part="R1" gate="G$1" x="53.34" y="43.18" rot="R270"/>
-<instance part="TO_MICROPHONE" gate="G$1" x="93.98" y="63.5" smashed="yes">
-<attribute name="NAME" x="86.36" y="68.58" size="1.778" layer="95"/>
-<attribute name="MIC_OUT" x="100.33" y="63.5" size="1.778" layer="96" display="name"/>
+<instance part="TO_MICROPHONE" gate="G$1" x="83.82" y="58.42" smashed="yes">
+<attribute name="NAME" x="76.2" y="63.5" size="1.778" layer="95"/>
+<attribute name="MIC_OUT" x="90.17" y="58.42" size="1.778" layer="96" display="name"/>
 </instance>
-<instance part="TO_DISPLAY" gate="G$1" x="93.98" y="91.44" smashed="yes">
-<attribute name="NAME" x="88.9" y="96.52" size="1.778" layer="95"/>
-<attribute name="RST" x="101.6" y="86.36" size="1.778" layer="96" display="name"/>
-<attribute name="SCL" x="101.6" y="88.9" size="1.778" layer="96" display="name"/>
-<attribute name="SDA" x="101.6" y="91.44" size="1.778" layer="96" display="name"/>
+<instance part="TO_DISPLAY" gate="G$1" x="83.82" y="86.36" smashed="yes">
+<attribute name="NAME" x="78.74" y="91.44" size="1.778" layer="95"/>
+<attribute name="RST" x="91.44" y="81.28" size="1.778" layer="96" display="name"/>
+<attribute name="SCL" x="91.44" y="83.82" size="1.778" layer="96" display="name"/>
+<attribute name="SDA" x="91.44" y="86.36" size="1.778" layer="96" display="name"/>
 </instance>
 <instance part="IC1" gate="A" x="30.48" y="76.2" smashed="yes">
 <attribute name="NAME" x="19.8374" y="97.7138" size="2.0828" layer="95" ratio="10" rot="SR0"/>
@@ -7826,9 +7826,9 @@ Source: http://www.lemo.com/pdfs/catalog/ROW/German/unipole_multipole.pdf</descr
 <segment>
 <pinref part="IC1" gate="A" pin="PC0"/>
 <wire x1="48.26" y1="68.58" x2="71.12" y2="68.58" width="0.1524" layer="91"/>
-<wire x1="71.12" y1="68.58" x2="71.12" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="71.12" y1="68.58" x2="71.12" y2="58.42" width="0.1524" layer="91"/>
 <pinref part="TO_MICROPHONE" gate="G$1" pin="1"/>
-<wire x1="71.12" y1="63.5" x2="88.9" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="71.12" y1="58.42" x2="78.74" y2="58.42" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$5" class="0">
@@ -7849,27 +7849,25 @@ Source: http://www.lemo.com/pdfs/catalog/ROW/German/unipole_multipole.pdf</descr
 <segment>
 <pinref part="IC1" gate="A" pin="PC4"/>
 <wire x1="48.26" y1="58.42" x2="58.42" y2="58.42" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="58.42" x2="58.42" y2="91.44" width="0.1524" layer="91"/>
+<wire x1="58.42" y1="58.42" x2="58.42" y2="86.36" width="0.1524" layer="91"/>
 <pinref part="TO_DISPLAY" gate="G$1" pin="1"/>
-<wire x1="58.42" y1="91.44" x2="88.9" y2="91.44" width="0.1524" layer="91"/>
+<wire x1="58.42" y1="86.36" x2="78.74" y2="86.36" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$7" class="0">
 <segment>
 <pinref part="IC1" gate="A" pin="PC5"/>
 <wire x1="48.26" y1="55.88" x2="60.96" y2="55.88" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="55.88" x2="60.96" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="55.88" x2="60.96" y2="83.82" width="0.1524" layer="91"/>
 <pinref part="TO_DISPLAY" gate="G$1" pin="2"/>
-<wire x1="60.96" y1="88.9" x2="88.9" y2="88.9" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="83.82" x2="78.74" y2="83.82" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$8" class="0">
 <segment>
 <pinref part="IC1" gate="A" pin="PD4"/>
-<wire x1="48.26" y1="81.28" x2="63.5" y2="81.28" width="0.1524" layer="91"/>
-<wire x1="63.5" y1="81.28" x2="63.5" y2="86.36" width="0.1524" layer="91"/>
 <pinref part="TO_DISPLAY" gate="G$1" pin="3"/>
-<wire x1="63.5" y1="86.36" x2="88.9" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="48.26" y1="81.28" x2="78.74" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
